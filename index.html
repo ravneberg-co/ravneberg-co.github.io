@@ -1,1 +1,152 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="https://avatars.githubusercontent.com/u/191381395?s=200&amp;v=4">
+    <title>Ravneberg</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .logo img:hover {
+            transform: scale(1.05);
+        }
+
+        .logo pre {    
+            color: #58a6ff;
+        }
+
+        .tagline {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: #8b949e;
+        }
+
+        .nav-links {
+            margin-bottom: 40px;
+        }
+
+        .nav-links a {
+            color: #58a6ff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 16px;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .nav-links a:hover {
+            border-bottom-color: #58a6ff;
+        }
+
+        .secondary-links {
+            margin-bottom: 40px;
+        }
+
+        .secondary-links span {
+            color: #8b949e;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .brands {
+            margin-top: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .brand-logo {
+            color: #8b949e;
+            font-size: 12px;
+            text-decoration: none;
+            padding: 8px 12px;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .brand-logo:hover {
+            color: #58a6ff;
+            border-color: #58a6ff;
+        }
+
+        @media (max-width: 600px) {
+            .logo img {
+                width: 80px;
+                height: 80px;
+            }
+
+            .nav-links a {
+                display: block;
+                margin: 5px 0;
+            }
+
+            .brands {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        @media (max-width:600px){
+            .logo pre{
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://avatars.githubusercontent.com/u/191381395?s=800&amp;v=4" alt="Ravneberg Logo">
+    <pre>██████   █████  ██    ██ ███    ██ ███████ ██████  ███████ ██████   ██████  
+██   ██ ██   ██ ██    ██ ████   ██ ██      ██   ██ ██      ██   ██ ██       
+██████  ███████ ██    ██ ██ ██  ██ █████   ██████  █████   ██████  ██   ███ 
+██   ██ ██   ██  ██  ██  ██  ██ ██ ██      ██   ██ ██      ██   ██ ██    ██ 
+██   ██ ██   ██   ████   ██   ████ ███████ ██████  ███████ ██   ██  ██████  
+                                                                            
+                                                                            </pre>
+        </div>
+
+        <div class="tagline">
+            Bespoke design and development
+        </div>
+
+        <div class="secondary-links">
+            <span>Sweden</span>
+        </div>
+
+        <div class="brands">
+            <a href="https://github.com/ravneberg-co" class="brand-logo">GitHub</a>
+            <a href="https://ravneberg.co" class="brand-logo">Website</a>
+            <a href="https://x.com/ravneberg_co" class="brand-logo">Twitter</a>
+        </div>
+    </div>
+</body>
+</html>
