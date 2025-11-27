@@ -1,0 +1,61 @@
+<header class="hero">
+    {{> logo}}
+
+    <h1 class="site-title">{{name}}</h1>
+    <p class="tagline">{{tagline}}</p>
+
+    <nav class="nav">
+        {{#each nav}}
+        <a href="{{url}}">{{label}}</a>
+        {{/each}}
+    </nav>
+</header>
+
+<main>
+    {{#each sections}}
+    <section class="section">
+        {{#if title}}<h2 class="section-title">{{title}}</h2>{{/if}}
+        {{#if description}}<p>{{description}}</p>{{/if}}
+        {{#if code}}
+        <div class="code-block">
+            <pre><code>{{code}}</code></pre>
+        </div>
+        {{/if}}
+        {{#if features}}
+        <div class="features">
+            {{#each features}}
+            <div class="feature">
+                {{#if svg}}<div class="feature-icon">{{{svg}}}</div>{{/if}}
+                <div class="feature-content">
+                    {{#if title}}<div class="feature-title">{{title}}</div>{{/if}}
+                    {{#if description}}<p class="feature-description">{{description}}</p>{{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+        {{/if}}
+    </section>
+    {{/each}}
+</main>
+
+<section class="links-section">
+    {{> links links=links}}
+</section>
+
+<footer class="footer">
+    <p class="footer-text">{{footer}}</p>
+    <p class="footer-location">{{location}}</p>
+
+    <div class="theme-toggle">
+        <span class="theme-toggle-label">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </span>
+        <label class="theme-switch">
+            <input type="checkbox" id="theme-toggle-input" aria-label="Toggle dark mode">
+            <span class="theme-switch-track"></span>
+        </label>
+        <span class="theme-toggle-label">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+    </div>
+</footer>

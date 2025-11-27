@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{description}}">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>{{title}}</title>
+    <style>
+{{{styles}}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        {{{body}}}
+    </div>
+
+    <script>
+        (function() {
+            const toggle = document.getElementById('theme-toggle-input');
+            const html = document.documentElement;
+
+            // Get saved theme or detect system preference
+            function getPreferredTheme() {
+                const saved = localStorage.getItem('theme');
+                if (saved) return saved;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            // Apply theme
+            function setTheme(theme) {
+                html.classList.remove('light', 'dark');
+                html.classList.add(theme);
+                toggle.checked = theme === 'dark';
+                localStorage.setItem('theme', theme);
+            }
+
+            // Initialize
+            setTheme(getPreferredTheme());
+
+            // Toggle handler
+            toggle.addEventListener('change', function() {
+                setTheme(this.checked ? 'dark' : 'light');
+            });
+
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                if (!localStorage.getItem('theme')) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

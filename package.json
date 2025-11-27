@@ -1,0 +1,20 @@
+{
+  "name": "ravneberg-co-github-io",
+  "version": "1.0.0",
+  "description": "Ravneberg website",
+  "scripts": {
+    "build": "node build.js",
+    "watch": "node build.js --watch",
+    "serve": "browser-sync start --server docs --port 8888 --files 'docs/**/*' --no-open",
+    "dev": "concurrently --kill-others \"npm run watch\" \"npm run serve\"",
+    "start": "npm run build && browser-sync start --server docs --port 8888"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "concurrently": "^9.2.1",
+    "handlebars": "latest"
+  }
+}
