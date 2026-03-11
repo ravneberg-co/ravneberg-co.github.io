@@ -1,20 +1,19 @@
 {
-  "name": "ravneberg-co-github-io",
+  "name": "ravneberg",
   "version": "1.0.0",
-  "description": "Ravneberg website",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "build": "node build.js",
-    "watch": "node build.js --watch",
-    "serve": "browser-sync start --server docs --port 8888 --files 'docs/**/*' --no-open",
-    "dev": "concurrently --kill-others \"npm run watch\" \"npm run serve\"",
-    "start": "npm run build && browser-sync start --server docs --port 8888"
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "geoip-lite": "^2.0.0"
+  },
   "devDependencies": {
-    "browser-sync": "^3.0.4",
-    "concurrently": "^9.2.1",
-    "handlebars": "latest"
+    "livereload": "^0.10.3"
   }
 }

@@ -1,0 +1,82 @@
+/* ==========================================================================
+   Component: Version Badge
+   ========================================================================== */
+
+.version-badge {
+	display: inline-block;
+	padding: var(--space-xs) var(--space-md);
+	font-family: var(--font-body);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	border-radius: var(--radius-full);
+	margin-top: var(--space-sm);
+
+	/* Dark theme: light badge with dark text */
+	background: rgba(255, 255, 255, 0.15);
+	color: rgba(255, 255, 255, 0.9);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Light theme: dark badge with light text */
+:root.light .version-badge {
+	background: rgba(0, 0, 0, 0.8);
+	color: rgba(255, 255, 255, 0.95);
+	border: 1px solid rgba(0, 0, 0, 0.9);
+}
+
+@media (prefers-color-scheme: light) {
+	:root:not(.dark) .version-badge {
+		background: rgba(0, 0, 0, 0.8);
+		color: rgba(255, 255, 255, 0.95);
+		border: 1px solid rgba(0, 0, 0, 0.9);
+	}
+}
+
+/* ==========================================================================
+   Component: Social Links
+   ========================================================================== */
+
+.social-links {
+	display: flex;
+	gap: var(--space-md);
+	position: absolute;
+	bottom: var(--space-xl);
+}
+
+.social-link {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-sm);
+	padding: var(--space-xs) var(--space-md);
+	font-family: var(--font-body);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+	text-decoration: none;
+	border-radius: var(--radius-full);
+	background: rgba(255, 255, 255, 0.15);
+	color: rgba(255, 255, 255, 0.9);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.social-link svg {
+	width: 16px;
+	height: 16px;
+}
+
+:root.light .social-link {
+	background: rgba(0, 0, 0, 0.8);
+	color: rgba(255, 255, 255, 0.95);
+	border: 1px solid rgba(0, 0, 0, 0.9);
+}
+
+@media (prefers-color-scheme: light) {
+	:root:not(.dark) .social-link {
+		background: rgba(0, 0, 0, 0.8);
+		color: rgba(255, 255, 255, 0.95);
+		border: 1px solid rgba(0, 0, 0, 0.9);
+	}
+}

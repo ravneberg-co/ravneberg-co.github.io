@@ -1,0 +1,33 @@
+/* ==========================================================================
+   Component: Content Section
+   ========================================================================== */
+
+.content {
+	max-width: 800px;
+	padding: var(--space-xl) var(--space-lg);
+	text-align: center;
+}
+
+.content h1 {
+	color: var(--text-color);
+	margin-top: var(--space-lg);
+}
+
+.content section {
+	margin-top: var(--space-2xl);
+	text-align: left;
+}
+
+.content section h2 {
+	color: var(--color-primary);
+	padding-bottom: var(--space-sm);
+}
+
+.content section h3 {
+	margin-top: var(--space-lg);
+}
+
+.content section h4 {
+	margin-top: var(--space-md);
+	font-weight: 500;
+}

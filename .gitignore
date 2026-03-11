@@ -1,22 +1,12 @@
-# Dependencies
 node_modules/
-
-# Build output (docs/ is NOT ignored - needed for GitHub Pages)
-
-# OS files
+data/
+.env
 .DS_Store
 Thumbs.db
-
-# Editor
 .vscode/
 .idea/
 .claude
 *.swp
 *.swo
-
-# Logs
 *.log
 npm-debug.log*
-
-# Optional: lock files (uncomment if you want to ignore)
-# package-lock.json

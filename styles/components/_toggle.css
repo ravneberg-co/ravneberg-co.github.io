@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Component: Theme Toggle (Material Design 3 Switch)
+   ========================================================================== */
+
+.theme-toggle {
+    position: fixed;
+    top: var(--space-lg);
+    right: var(--space-lg);
+    width: var(--toggle-width);
+    height: var(--toggle-height);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--toggle-track-border);
+    background: var(--toggle-track);
+    cursor: pointer;
+    padding: 0;
+    z-index: var(--z-overlay);
+    transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+.theme-toggle:hover {
+    background: var(--toggle-track-hover);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+/* -------------------------------------------------------------------------
+   Thumb
+   ------------------------------------------------------------------------- */
+
+.theme-toggle .thumb {
+    position: absolute;
+    top: 50%;
+    left: var(--space-xs);
+    width: var(--toggle-thumb-size);
+    height: var(--toggle-thumb-size);
+    border-radius: var(--radius-full);
+    background: var(--toggle-thumb);
+    transform: translateY(-50%);
+    transition:
+        left var(--transition-bounce),
+        background var(--transition-base),
+        width var(--transition-fast),
+        height var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:active .thumb {
+    width: 28px;
+}
+
+/* -------------------------------------------------------------------------
+   Icons
+   ------------------------------------------------------------------------- */
+
+.theme-toggle .thumb svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--toggle-icon);
+    transition: fill var(--transition-base);
+}
+
+.theme-toggle .icon-light { display: none; }
+.theme-toggle .icon-dark { display: block; }
+
+/* -------------------------------------------------------------------------
+   Light Mode State
+   ------------------------------------------------------------------------- */
+
+:root.light .theme-toggle .thumb {
+    left: calc(100% - 28px);
+}
+
+:root.light .theme-toggle .icon-light { display: block; }
+:root.light .theme-toggle .icon-dark { display: none; }
+
+/* OS Preference: Light */
+@media (prefers-color-scheme: light) {
+    :root:not(.dark) .theme-toggle .thumb {
+        left: calc(100% - 28px);
+    }
+
+    :root:not(.dark) .theme-toggle .icon-light { display: block; }
+    :root:not(.dark) .theme-toggle .icon-dark { display: none; }
+}

@@ -1,0 +1,57 @@
+.fullscreen-toggle {
+	position: fixed;
+	bottom: var(--space-md);
+	right: var(--space-md);
+	z-index: var(--z-overlay);
+	background: none;
+	border: none;
+	padding: var(--space-xs);
+	cursor: pointer;
+	color: var(--text-color-muted);
+	opacity: 0.4;
+	transition: opacity var(--transition-base);
+}
+
+.fullscreen-toggle:hover {
+	opacity: 1;
+}
+
+.fullscreen-toggle svg {
+	width: 20px;
+	height: 20px;
+	fill: currentColor;
+}
+
+.fullscreen-toggle .fullscreen-toggle__exit {
+	display: none;
+}
+
+:fullscreen .fullscreen-toggle .fullscreen-toggle__enter {
+	display: none;
+}
+
+:fullscreen .fullscreen-toggle .fullscreen-toggle__exit {
+	display: block;
+}
+
+.stats-toggle {
+	position: fixed;
+	bottom: var(--space-md);
+	left: var(--space-md);
+	z-index: var(--z-overlay);
+	padding: var(--space-xs);
+	color: var(--text-color-muted);
+	opacity: 0.4;
+	transition: opacity var(--transition-base);
+	text-decoration: none;
+}
+
+.stats-toggle:hover {
+	opacity: 1;
+}
+
+.stats-toggle svg {
+	width: 20px;
+	height: 20px;
+	fill: currentColor;
+}

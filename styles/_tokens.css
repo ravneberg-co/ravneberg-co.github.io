@@ -1,0 +1,120 @@
+/* ==========================================================================
+   Design Tokens
+   ========================================================================== */
+
+:root {
+    /* -------------------------------------------------------------------------
+       Typography
+       ------------------------------------------------------------------------- */
+    --font-body: 'Google Sans Mono', monospace;
+    --font-heading: 'Quicksand', sans-serif;
+
+    /* -------------------------------------------------------------------------
+       Colors - Brand
+       ------------------------------------------------------------------------- */
+    --color-primary: #59e6d5;
+    --color-primary-rgb: 89, 230, 213;
+
+    /* -------------------------------------------------------------------------
+       Colors - Accent (Material Design 3 Purple)
+       ------------------------------------------------------------------------- */
+    --color-accent: #d0bcff;
+    --color-accent-hover: #c4b0f0;
+    --color-accent-dark: #1e1a2e;
+
+    /* -------------------------------------------------------------------------
+       Colors - Background
+       ------------------------------------------------------------------------- */
+    --color-bg-dark: #0a0a0f;
+    --color-bg-light: #f5f5f7;
+
+    /* -------------------------------------------------------------------------
+       Colors - Theme (dynamic, changes with dark/light mode)
+       ------------------------------------------------------------------------- */
+    --bg-color: var(--color-bg-dark);
+    --logo-outline: rgba(255, 255, 255, 0.1);
+    --text-color: rgba(255, 255, 255, 0.9);
+    --text-color-muted: rgba(255, 255, 255, 0.6);
+
+    /* -------------------------------------------------------------------------
+       Toggle Component Tokens
+       ------------------------------------------------------------------------- */
+    --toggle-track: transparent;
+    --toggle-track-hover: rgba(255, 255, 255, 0.08);
+    --toggle-track-border: rgba(255, 255, 255, 0.3);
+    --toggle-thumb: var(--color-accent);
+    --toggle-icon: var(--color-accent-dark);
+
+    /* -------------------------------------------------------------------------
+       Spacing
+       ------------------------------------------------------------------------- */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    /* -------------------------------------------------------------------------
+       Sizing
+       ------------------------------------------------------------------------- */
+    --logo-size: min(280px, 50vw);
+    --toggle-width: 52px;
+    --toggle-height: 32px;
+    --toggle-thumb-size: 24px;
+
+    /* -------------------------------------------------------------------------
+       Border Radius
+       ------------------------------------------------------------------------- */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+
+    /* -------------------------------------------------------------------------
+       Transitions
+       ------------------------------------------------------------------------- */
+    --transition-fast: 0.1s ease;
+    --transition-base: 0.2s ease;
+    --transition-bounce: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    /* -------------------------------------------------------------------------
+       Z-Index
+       ------------------------------------------------------------------------- */
+    --z-base: 1;
+    --z-overlay: 10;
+    --z-modal: 100;
+}
+
+/* ==========================================================================
+   Light Mode Tokens
+   ========================================================================== */
+
+:root.light {
+    --bg-color: var(--color-bg-light);
+    --logo-outline: rgba(0, 0, 0, 0.08);
+    --text-color: rgba(0, 0, 0, 0.9);
+    --text-color-muted: rgba(0, 0, 0, 0.6);
+
+    --toggle-track: var(--color-accent);
+    --toggle-track-hover: var(--color-accent-hover);
+    --toggle-track-border: var(--color-accent);
+    --toggle-thumb: var(--color-accent-dark);
+    --toggle-icon: var(--color-accent);
+}
+
+/* OS Preference: Light */
+@media (prefers-color-scheme: light) {
+    :root:not(.dark) {
+        --bg-color: var(--color-bg-light);
+        --logo-outline: rgba(0, 0, 0, 0.08);
+        --text-color: rgba(0, 0, 0, 0.9);
+        --text-color-muted: rgba(0, 0, 0, 0.6);
+
+        --toggle-track: var(--color-accent);
+        --toggle-track-hover: var(--color-accent-hover);
+        --toggle-track-border: var(--color-accent);
+        --toggle-thumb: var(--color-accent-dark);
+        --toggle-icon: var(--color-accent);
+    }
+}

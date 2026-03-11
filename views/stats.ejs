@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title><%= appName %> — Stats</title>
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+	<link rel="stylesheet" href="/styles/_fonts.css" />
+	<style>
+		:root {
+			--bg: #0a0a0f;
+			--text: rgba(255,255,255,0.9);
+			--muted: rgba(255,255,255,0.4);
+			--primary: #59e6d5;
+			--accent: #d0bcff;
+			--danger: #e74c3c;
+			--border: rgba(255,255,255,0.1);
+			--font: 'Google Sans Mono', monospace;
+		}
+		* { margin:0; padding:0; box-sizing:border-box; }
+		body { background:var(--bg); color:var(--text); font-family:var(--font); font-size:14px; padding:2rem; line-height:1.6; }
+		h1 { font-family:var(--font); font-size:0.85rem; text-transform:uppercase; letter-spacing:0.15em; color:var(--primary); margin-bottom:2rem; font-weight:400; display:flex; align-items:center; gap:0.75rem; }
+		h1 span { color:var(--muted); }
+		h1 svg { width:24px; height:24px; fill:var(--text); flex-shrink:0; }
+
+		.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; margin-bottom:2rem; }
+
+		.card { border:1px solid var(--border); padding:1.25rem; position:relative; }
+		.card::before { content:attr(data-label); position:absolute; top:-0.6em; left:0.75rem; background:var(--bg); padding:0 0.5rem; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+
+		.stat { font-size:2.5rem; font-weight:400; color:var(--primary); line-height:1; margin-bottom:0.25rem; }
+		.stat-label { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+
+		.chart-container { border:1px solid var(--border); padding:1.25rem; margin-bottom:1.5rem; position:relative; }
+		.chart-container::before { content:attr(data-label); position:absolute; top:-0.6em; left:0.75rem; background:var(--bg); padding:0 0.5rem; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+		canvas { width:100%; height:200px; display:block; }
+
+		table { width:100%; border-collapse:collapse; font-size:0.8rem; }
+		th { text-align:left; color:var(--muted); font-weight:400; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; padding:0.5rem 0.75rem; border-bottom:1px solid var(--border); }
+		td { padding:0.4rem 0.75rem; border-bottom:1px solid rgba(255,255,255,0.04); }
+		tr:hover td { background:rgba(255,255,255,0.02); }
+
+		.bar { height:4px; background:var(--primary); display:inline-block; vertical-align:middle; margin-left:0.5rem; opacity:0.6; }
+		.bar--accent { background:var(--accent); }
+
+		.period { display:flex; gap:0.5rem; margin-bottom:2rem; }
+		.period button { background:none; border:1px solid var(--border); color:var(--muted); font-family:var(--font); font-size:0.7rem; padding:0.25rem 0.75rem; cursor:pointer; text-transform:uppercase; letter-spacing:0.05em; }
+		.period button.active { border-color:var(--primary); color:var(--primary); }
+		.period button:hover { border-color:var(--text); color:var(--text); }
+
+		.tables { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1.5rem; }
+		.table-card { border:1px solid var(--border); position:relative; }
+		.table-card::before { content:attr(data-label); position:absolute; top:-0.6em; left:0.75rem; background:var(--bg); padding:0 0.5rem; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+
+		.loading { color:var(--muted); font-size:0.8rem; }
+		.timestamp { color:var(--muted); font-size:0.65rem; text-transform:uppercase; letter-spacing:0.05em; margin-top:2rem; }
+	</style>
+</head>
+<body>
+	<h1>
+		<svg viewBox="0 0 1925 1925"><g><path d="M1259.02,709.574c0-27.16-22.05-49.209-49.209-49.209l-3.438,0c-27.159,0-49.209,22.049-49.209,49.209c0,27.159 22.05,49.209 49.209,49.209l3.438,0c27.159,0 49.209-22.05 49.209-49.209Z"/><path d="M1582.42,1067.29c0-28.108-22.82-50.928-50.927-50.928c-28.108,0-50.928,22.82-50.928,50.928l0,20.695c0,28.108 22.82,50.928 50.928,50.928c28.107,0 50.927-22.82 50.927-50.928l0-20.695Z"/><path d="M1420.72,906.996c0-28.108-22.82-50.928-50.928-50.928c-28.108,0-50.928,22.82-50.928,50.928l0,218.726c0,28.108 22.82,50.928 50.928,50.928c28.108,0 50.928-22.82 50.928-50.928l0-218.726Z"/><path d="M1259.02,937.747c0-28.107-22.82-50.928-50.928-50.928c-28.108,0-50.928,22.821-50.928,50.928l0,214.734c0,28.108 22.82,50.928 50.928,50.928c28.108,0 50.928-22.82 50.928-50.928l0-214.734Z"/><path d="M1097.32,775.574c0-28.108-22.82-50.928-50.928-50.928c-28.108,0-50.928,22.82-50.928,50.928l0,430.131c0,28.108 22.82,50.928 50.928,50.928c28.108,0 50.928-22.82 50.928-50.928l0-430.131Z"/><path d="M935.623,719.084c0-28.107-22.82-50.927-50.928-50.927c-28.108,0-50.928,22.82-50.928,50.927l0,457.377c0,28.108 22.82,50.928 50.928,50.928c28.108,0 50.928-22.82 50.928-50.928l0-457.377Z"/><path d="M773.923,775.574c0-28.108-22.82-50.928-50.928-50.928c-28.108,0-50.928,22.82-50.928,50.928l0,376.907c0,28.108 22.82,50.928 50.928,50.928c28.108,0 50.928-22.82 50.928-50.928l0-376.907Z"/><path d="M612.223,906.996c0-28.108-22.82-50.928-50.928-50.928c-28.108,0-50.928,22.82-50.928,50.928l0,201.817c0,28.108 22.82,50.928 50.928,50.928c28.108,0 50.928-22.82 50.928-50.928l0-201.817Z"/><path d="M445.696,1046.8c-1.798-28.05-26.032-49.363-54.082-47.565c-28.05,1.799-49.363,26.033-47.565,54.083l1.464,22.821c1.798,28.05 26.032,49.363 54.082,47.565c28.05-1.799 49.363-26.033 47.565-54.083l-1.464-22.821Z"/></g></svg>
+		<span>//</span> 0x00 <span>//</span> <%= appName %> Analytics
+	</h1>
+
+	<div class="period" id="period">
+		<button data-days="7">7d</button>
+		<button data-days="30" class="active">30d</button>
+		<button data-days="90">90d</button>
+		<button data-days="365">1y</button>
+	</div>
+
+	<div class="grid" id="totals"></div>
+
+	<div class="chart-container" data-label="Daily Traffic">
+		<canvas id="chart-daily"></canvas>
+	</div>
+
+	<div class="tables" id="tables"></div>
+
+	<div class="timestamp" id="timestamp"></div>
+
+	<script>
+		let currentDays = 30
+
+		document.getElementById('period').addEventListener('click', (e) => {
+			const btn = e.target.closest('button')
+			if (!btn) return
+			document.querySelectorAll('.period button').forEach(b => b.classList.remove('active'))
+			btn.classList.add('active')
+			currentDays = parseInt(btn.dataset.days)
+			load()
+		})
+
+		async function load() {
+			const res = await fetch('/api/stats?days=' + currentDays)
+			const data = await res.json()
+			renderTotals(data.totals)
+			renderChart(data.daily)
+			renderTables(data)
+			document.getElementById('timestamp').textContent =
+				'Last updated // ' + new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC'
+		}
+
+		function renderTotals(t) {
+			const el = document.getElementById('totals')
+			const newVisitors = (t.sessions || 0) - (t.returning_visitors || 0)
+			el.innerHTML = [
+				{ label: 'Sessions', value: t.sessions || 0 },
+				{ label: 'Unique Visitors', value: t.unique_visitors || 0 },
+				{ label: 'New / Returning', value: `${newVisitors} / ${t.returning_visitors || 0}` },
+			].map(s => `
+				<div class="card" data-label="${s.label}">
+					<div class="stat">${s.value}</div>
+				</div>
+			`).join('')
+		}
+
+		function renderChart(daily) {
+			const canvas = document.getElementById('chart-daily')
+			const ctx = canvas.getContext('2d')
+			const dpr = window.devicePixelRatio || 1
+			const rect = canvas.getBoundingClientRect()
+			canvas.width = rect.width * dpr
+			canvas.height = rect.height * dpr
+			ctx.scale(dpr, dpr)
+			const w = rect.width, h = rect.height
+
+			ctx.clearRect(0, 0, w, h)
+
+			if (!daily?.length) {
+				ctx.fillStyle = 'rgba(255,255,255,0.2)'
+				ctx.font = '12px "Google Sans Mono", monospace'
+				ctx.textAlign = 'center'
+				ctx.fillText('No data', w / 2, h / 2)
+				return
+			}
+
+			const maxVal = Math.max(...daily.map(d => d.visitors), 1)
+			const padding = { top: 20, right: 10, bottom: 30, left: 40 }
+			const cw = w - padding.left - padding.right
+			const ch = h - padding.top - padding.bottom
+
+			ctx.strokeStyle = 'rgba(255,255,255,0.05)'
+			ctx.lineWidth = 1
+			for (let i = 0; i <= 4; i++) {
+				const y = padding.top + (ch / 4) * i
+				ctx.beginPath()
+				ctx.moveTo(padding.left, y)
+				ctx.lineTo(w - padding.right, y)
+				ctx.stroke()
+
+				ctx.fillStyle = 'rgba(255,255,255,0.25)'
+				ctx.font = '10px "Google Sans Mono", monospace'
+				ctx.textAlign = 'right'
+				ctx.fillText(Math.round(maxVal - (maxVal / 4) * i), padding.left - 8, y + 3)
+			}
+
+			const barW = Math.max(2, (cw / daily.length) - 2)
+			const gap = (cw - barW * daily.length) / (daily.length + 1)
+
+			daily.forEach((d, i) => {
+				const x = padding.left + gap + i * (barW + gap)
+				const barH = (d.visitors / maxVal) * ch
+				const y = padding.top + ch - barH
+
+				const sessionH = (d.sessions / maxVal) * ch
+				ctx.fillStyle = 'rgba(208,188,255,0.15)'
+				ctx.fillRect(x, padding.top + ch - sessionH, barW, sessionH)
+
+				ctx.fillStyle = 'rgba(89,230,213,0.6)'
+				ctx.fillRect(x, y, barW, barH)
+			})
+
+			ctx.fillStyle = 'rgba(255,255,255,0.25)'
+			ctx.font = '9px "Google Sans Mono", monospace'
+			ctx.textAlign = 'center'
+			const labelInterval = Math.ceil(daily.length / 8)
+			daily.forEach((d, i) => {
+				if (i % labelInterval === 0) {
+					const x = padding.left + gap + i * (barW + gap) + barW / 2
+					ctx.fillText(d.day.slice(5), x, h - 8)
+				}
+			})
+		}
+
+		function renderTables(data) {
+			const el = document.getElementById('tables')
+			el.innerHTML = ''
+
+			const tables = [
+				{ label: 'Pages', rows: data.pages, cols: ['page', 'views', 'avg_duration'], format: { avg_duration: v => (v/1000).toFixed(1) + 's' } },
+				{ label: 'Referrers', rows: data.referrers, cols: ['referrer', 'count'], format: { referrer: v => v ? new URL(v).hostname : 'direct' } },
+				{ label: 'Countries', rows: data.countries, cols: ['country', 'count'] },
+				{ label: 'Browsers', rows: data.browsers, cols: ['browser', 'count'] },
+				{ label: 'Devices', rows: data.devices, cols: ['device', 'count'] },
+				{ label: 'Languages', rows: data.languages, cols: ['language', 'count'] },
+			]
+
+			tables.forEach(t => {
+				if (!t.rows?.length) return
+				const maxCount = Math.max(...t.rows.map(r => r.count || r.views || 0))
+				const card = document.createElement('div')
+				card.className = 'table-card'
+				card.dataset.label = t.label
+
+				const barColor = t.label === 'Referrers' ? 'bar--accent' : ''
+
+				card.innerHTML = `<table>
+					<thead><tr>${t.cols.map(c => `<th>${c}</th>`).join('')}<th></th></tr></thead>
+					<tbody>${t.rows.slice(0, 10).map(r => `<tr>${t.cols.map(c => {
+						const val = t.format?.[c] ? t.format[c](r[c]) : r[c]
+						return `<td>${val ?? '—'}</td>`
+					}).join('')}<td><span class="bar ${barColor}" style="width:${((r.count || r.views || 0) / maxCount) * 60}px"></span></td></tr>`).join('')}</tbody>
+				</table>`
+				el.appendChild(card)
+			})
+		}
+
+		window.addEventListener('resize', () => { load() })
+		load()
+	</script>
+</body>
+</html>

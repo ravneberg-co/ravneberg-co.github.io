@@ -1,0 +1,97 @@
+/* ==========================================================================
+   Component: Navigation Indicator (Brutalist Terminal style)
+   ========================================================================== */
+
+.nav-indicator {
+	position: fixed;
+	left: var(--space-lg);
+	top: 50%;
+	transform: translate(-200%, -50%);
+	z-index: 100;
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		transform 0.4s ease,
+		opacity 0.4s ease;
+	will-change: transform, opacity;
+}
+
+.nav-indicator.visible {
+	transform: translate(0, -50%);
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.nav-indicator__list {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+/* -------------------------------------------------------------------------
+   Navigation Item
+   ------------------------------------------------------------------------- */
+
+.nav-indicator__item {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	font-family: 'Google Sans Mono', monospace;
+	font-size: 0.7rem;
+	letter-spacing: 0.1em;
+	color: var(--text-color-muted);
+	opacity: 0.5;
+	transition: opacity var(--transition-fast);
+}
+
+/* Hex index */
+.nav-indicator__item::before {
+	content: "0x0" attr(data-page) " ";
+	white-space: pre;
+}
+
+/* Block marker — empty by default */
+.nav-indicator__item::after {
+	content: "□ ";
+	order: 1;
+	white-space: pre;
+}
+
+/* Current/Active state */
+.nav-indicator__item--current {
+	color: var(--color-primary);
+	opacity: 1;
+}
+
+.nav-indicator__item--current::after {
+	content: "■ ";
+}
+
+/* Hover state */
+.nav-indicator__item:not(.nav-indicator__item--current):hover {
+	opacity: 0.8;
+}
+
+/* -------------------------------------------------------------------------
+   Item Title
+   ------------------------------------------------------------------------- */
+
+.nav-indicator__title {
+	order: 2;
+	text-transform: uppercase;
+	font-family: 'Google Sans Mono', monospace;
+	font-size: 0.7rem;
+	letter-spacing: 0.1em;
+	white-space: nowrap;
+}
+
+/* -------------------------------------------------------------------------
+   Mobile: hide titles, show hex + markers only
+   ------------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+	.nav-indicator__title {
+		display: none;
+	}
+}

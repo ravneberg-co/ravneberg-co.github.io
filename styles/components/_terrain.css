@@ -1,0 +1,76 @@
+/* Terrain WebGL (hero background) */
+.terrain-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.terrain-container canvas {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.terrain-controls {
+	position: absolute;
+	bottom: var(--space-md);
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	z-index: 1;
+	pointer-events: auto;
+}
+
+.terrain-toggle-label {
+	font-size: 0.65rem;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: var(--text-color-muted);
+}
+
+.terrain-switch {
+	position: relative;
+	width: 36px;
+	height: 20px;
+}
+
+.terrain-switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.terrain-switch-track {
+	position: absolute;
+	cursor: pointer;
+	inset: 0;
+	background: var(--border-color);
+	border-radius: 10px;
+	transition: background var(--transition-base);
+}
+
+.terrain-switch-track::before {
+	content: "";
+	position: absolute;
+	height: 14px;
+	width: 14px;
+	left: 3px;
+	bottom: 3px;
+	background: var(--bg-color);
+	border-radius: 50%;
+	transition: transform var(--transition-base);
+}
+
+.terrain-switch input:checked + .terrain-switch-track {
+	background: var(--primary-color);
+}
+
+.terrain-switch input:checked + .terrain-switch-track::before {
+	transform: translateX(16px);
+}
