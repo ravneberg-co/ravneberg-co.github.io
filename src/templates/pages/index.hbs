@@ -11,6 +11,18 @@
     </nav>
 </header>
 
+<section class="terrain-section">
+    <canvas id="terrain-canvas"></canvas>
+    <div class="terrain-controls">
+        <span class="terrain-toggle-label">Single light</span>
+        <label class="terrain-switch">
+            <input type="checkbox" id="all-lights-toggle" aria-label="Toggle all lights">
+            <span class="terrain-switch-track"></span>
+        </label>
+        <span class="terrain-toggle-label">All lights</span>
+    </div>
+</section>
+
 <main>
     {{#each sections}}
     <section class="section">

@@ -3,18 +3,790 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{description}}">
+    <meta name="description" content="Transport agnostic post-quantum encrypted protocol for decentralized communication">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <title>{{title}}</title>
+    <title>Norr - Ravneberg</title>
     <style>
-{{{styles}}}
+/* CSS Variables with Light/Dark Theme Support */
+/* Uses prefers-color-scheme to automatically switch themes */
+
+:root {
+    /* Typography */
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.4s ease;
+
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+    --spacing-3xl: 64px;
+    --spacing-4xl: 96px;
+
+    /* Border radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    /* Max widths */
+    --max-width-content: 720px;
+    --max-width-wide: 960px;
+
+    /* Font sizes */
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 1.875rem;
+    --text-4xl: 2.25rem;
+
+    /* Line heights */
+    --leading-tight: 1.25;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.75;
+
+    /* Accent color - teal/cyan from your favicon */
+    --accent: #59e6d5;
+    --accent-hover: #4dd4c3;
+}
+
+/* Light theme (default) */
+:root {
+    --color-bg: #ffffff;
+    --color-bg-alt: #f8f9fa;
+    --color-bg-code: #f1f3f5;
+    --color-text: #1a1a1a;
+    --color-text-secondary: #495057;
+    --color-text-muted: #868e96;
+    --color-border: #dee2e6;
+    --color-border-light: #e9ecef;
+    --color-link: #1971c2;
+    --color-link-hover: #1864ab;
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: #0d1117;
+        --color-bg-alt: #161b22;
+        --color-bg-code: #1c2128;
+        --color-text: #e6edf3;
+        --color-text-secondary: #8b949e;
+        --color-text-muted: #6e7681;
+        --color-border: #30363d;
+        --color-border-light: #21262d;
+        --color-link: #58a6ff;
+        --color-link-hover: #79b8ff;
+    }
+}
+
+/* Base styles and reset */
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: var(--leading-normal);
+    min-height: 100vh;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Container */
+.container {
+    max-width: var(--max-width-content);
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    color: var(--color-text);
+}
+
+h1 {
+    font-size: var(--text-4xl);
+    margin-bottom: var(--spacing-lg);
+}
+
+h2 {
+    font-size: var(--text-2xl);
+    margin-top: var(--spacing-2xl);
+    margin-bottom: var(--spacing-md);
+}
+
+h3 {
+    font-size: var(--text-xl);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-sm);
+}
+
+p {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-secondary);
+}
+
+/* Links */
+a {
+    color: var(--color-link);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--color-link-hover);
+    text-decoration: underline;
+}
+
+/* Code */
+code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background-color: var(--color-bg-code);
+    padding: 0.2em 0.4em;
+    border-radius: var(--radius-sm);
+}
+
+pre {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    background-color: var(--color-bg-code);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin-bottom: var(--spacing-md);
+    border: 1px solid var(--color-border-light);
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    font-size: inherit;
+}
+
+/* Lists */
+ul, ol {
+    margin-bottom: var(--spacing-md);
+    padding-left: var(--spacing-lg);
+}
+
+li {
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text-secondary);
+}
+
+/* Horizontal rule */
+hr {
+    border: none;
+    border-top: 1px solid var(--color-border);
+    margin: var(--spacing-2xl) 0;
+}
+
+/* Selection */
+::selection {
+    background-color: var(--accent);
+    color: var(--color-bg);
+}
+
+/* Focus styles */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .container {
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+
+    h1 {
+        font-size: var(--text-3xl);
+    }
+
+    h2 {
+        font-size: var(--text-xl);
+    }
+}
+
+/* Header / Hero */
+.hero {
+    text-align: center;
+    padding: var(--spacing-2xl) 0 var(--spacing-3xl);
+    /*border-bottom: 1px solid var(--color-border);*/
+    margin-bottom: var(--spacing-2xl);
+}
+
+.logo {
+    display: inline-block;
+    margin-bottom: var(--spacing-lg);
+}
+
+/*
+.logo svg {
+    width: 80px;
+    height: 80px;
+}
+*/
+.site-title {
+    font-size: var(--text-4xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: -0.02em;
+}
+
+.tagline {
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    max-width: 500px;
+    margin: 0 auto var(--spacing-lg);
+}
+
+/* Navigation */
+.nav {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.nav a {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.nav a:hover {
+    color: var(--color-text);
+    background-color: var(--color-bg-alt);
+    text-decoration: none;
+}
+
+/* Sections */
+.section {
+    margin-bottom: var(--spacing-3xl);
+    &:first-of-type{
+   	display: flex;
+    }
+    &:first-of-type:before{
+		content: " ";
+    	min-width: 1em;
+        background-color: var(--accent);
+        border-radius: .5em;
+        margin: -.5em .25em 0 0;
+    }
+}
+
+.section-title {
+    font-size: var(--text-xl);
+    font-weight: 600;
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    /*
+    border-bottom: 1px solid var(--color-border-light);
+    */
+}
+
+/* Code blocks */
+.code-block {
+    position: relative;
+    margin-bottom: var(--spacing-lg);
+}
+
+.code-block pre {
+    margin: 0;
+}
+
+.code-block .copy-btn {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.code-block .copy-btn:hover {
+    background: var(--color-bg);
+    color: var(--color-text);
+}
+
+/* Feature list */
+.features {
+	margin-top: var(--spacing-3xl);
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-md);
+    @media (max-width: 640px) {
+   		flex-direction: column;
+    }
+}
+
+.feature {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    @media (max-width: 640px) {
+  		align-items: normal;
+    	flex-direction: row;
+    }
+    /*
+    background: var(--color-bg-alt);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-light);
+    */
+}
+
+.feature-icon {
+	display: flex;
+	justify-self: center;
+    flex-shrink: 0;
+    flex-grow: 1;
+    max-height: 8em;
+    color: var(--accent);
+    @media (max-width: 640px) {
+  		flex-basis: 20%;
+   		flex-grow: 0;
+    }
+}
+
+.feature-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.feature-content {
+    flex: 1;
+    text-align: center;
+    @media (max-width: 640px) {
+  		text-align: left;
+    }
+}
+
+.feature-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text);
+}
+
+.feature-description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+
+}
+
+/* Links section */
+.links-section {
+    margin-top: var(--spacing-3xl);
+    padding-top: var(--spacing-2xl);
+    border-top: 1px solid var(--color-border);
+}
+
+.links-grid {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.link-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    transition: all var(--transition-fast);
+}
+
+.link-item:hover {
+    border-color: var(--accent);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.link-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Footer */
+.footer {
+    margin-top: var(--spacing-3xl);
+    padding-top: var(--spacing-xl);
+    text-align: center;
+}
+
+.footer-text {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.footer-location {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin-top: var(--spacing-sm);
+}
+
+/* Accent text */
+.accent {
+    color: var(--accent);
+}
+
+/* Badge */
+.badge {
+    display: inline-block;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text-muted);
+}
+
+/* Theme Toggle - Material Design Style */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+.theme-toggle-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.theme-toggle-label svg {
+    width: 16px;
+    height: 16px;
+}
+
+.theme-switch {
+    position: relative;
+    width: 52px;
+    height: 32px;
+}
+
+.theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.theme-switch-track {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-border);
+    border-radius: 16px;
+    transition: background-color var(--transition-normal);
+}
+
+.theme-switch-track::before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--color-bg);
+    border-radius: 50%;
+    transition: transform var(--transition-normal), background-color var(--transition-normal);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.theme-switch input:checked + .theme-switch-track {
+    background-color: var(--accent);
+}
+
+.theme-switch input:checked + .theme-switch-track::before {
+    transform: translateX(20px);
+}
+
+.theme-switch input:focus-visible + .theme-switch-track {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Theme override classes */
+html.light {
+    --color-bg: #ffffff;
+    --color-bg-alt: #f8f9fa;
+    --color-bg-code: #f1f3f5;
+    --color-text: #1a1a1a;
+    --color-text-secondary: #495057;
+    --color-text-muted: #868e96;
+    --color-border: #dee2e6;
+    --color-border-light: #e9ecef;
+    --color-link: #1971c2;
+    --color-link-hover: #1864ab;
+}
+
+html.dark {
+    --color-bg: #0d1117;
+    --color-bg-alt: #161b22;
+    --color-bg-code: #1c2128;
+    --color-text: #e6edf3;
+    --color-text-secondary: #8b949e;
+    --color-text-muted: #6e7681;
+    --color-border: #30363d;
+    --color-border-light: #21262d;
+    --color-link: #58a6ff;
+    --color-link-hover: #79b8ff;
+}
+
+/* Terrain WebGL Section */
+.terrain-section {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin-bottom: var(--spacing-2xl);
+}
+
+#terrain-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.terrain-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.terrain-toggle-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.terrain-switch {
+    position: relative;
+    width: 52px;
+    height: 32px;
+}
+
+.terrain-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.terrain-switch-track {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-border);
+    border-radius: 16px;
+    transition: background-color var(--transition-normal);
+}
+
+.terrain-switch-track::before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--color-bg);
+    border-radius: 50%;
+    transition: transform var(--transition-normal), background-color var(--transition-normal);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.terrain-switch input:checked + .terrain-switch-track {
+    background-color: var(--accent);
+}
+
+.terrain-switch input:checked + .terrain-switch-track::before {
+    transform: translateX(20px);
+}
+
+.terrain-switch input:focus-visible + .terrain-switch-track {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .hero {
+        padding: var(--spacing-xl) 0 var(--spacing-2xl);
+    }
+
+    .logo svg {
+        width: 64px;
+        height: 64px;
+    }
+
+    .site-title {
+        font-size: var(--text-3xl);
+    }
+
+    .tagline {
+        font-size: var(--text-base);
+    }
+
+    .nav {
+        gap: var(--spacing-sm);
+    }
+
+    .links-grid {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .link-item {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+    }
+}
+
+
     </style>
 </head>
 <body>
     <div class="container">
-        {{{body}}}
+        <header class="hero">
+    <div class="logo">
+        <svg width="100%" height="100%" viewBox="0 0 1925 1925" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1259.02,709.574c-0,-27.16 -22.05,-49.209 -49.209,-49.209l-3.438,-0c-27.159,-0 -49.209,22.049 -49.209,49.209c-0,27.159 22.05,49.209 49.209,49.209l3.438,-0c27.159,-0 49.209,-22.05 49.209,-49.209Z" fill="var(--accent)"/>
+            <path d="M1582.42,1067.29c0,-28.108 -22.82,-50.928 -50.927,-50.928c-28.108,0 -50.928,22.82 -50.928,50.928l-0,20.695c-0,28.108 22.82,50.928 50.928,50.928c28.107,-0 50.927,-22.82 50.927,-50.928l0,-20.695Z" fill="var(--accent)"/>
+            <path d="M1420.72,906.996c-0,-28.108 -22.82,-50.928 -50.928,-50.928c-28.108,0 -50.928,22.82 -50.928,50.928l-0,218.726c-0,28.108 22.82,50.928 50.928,50.928c28.108,-0 50.928,-22.82 50.928,-50.928l-0,-218.726Z" fill="var(--accent)"/>
+            <path d="M1259.02,937.747c-0,-28.107 -22.82,-50.928 -50.928,-50.928c-28.108,0 -50.928,22.821 -50.928,50.928l-0,214.734c-0,28.108 22.82,50.928 50.928,50.928c28.108,-0 50.928,-22.82 50.928,-50.928l-0,-214.734Z" fill="var(--accent)"/>
+            <path d="M1097.32,775.574c-0,-28.108 -22.82,-50.928 -50.928,-50.928c-28.108,0 -50.928,22.82 -50.928,50.928l-0,430.131c-0,28.108 22.82,50.928 50.928,50.928c28.108,-0 50.928,-22.82 50.928,-50.928l-0,-430.131Z" fill="var(--accent)"/>
+            <path d="M935.623,719.084c-0,-28.107 -22.82,-50.927 -50.928,-50.927c-28.108,-0 -50.928,22.82 -50.928,50.927l0,457.377c0,28.108 22.82,50.928 50.928,50.928c28.108,-0 50.928,-22.82 50.928,-50.928l-0,-457.377Z" fill="var(--accent)"/>
+            <path d="M773.923,775.574c-0,-28.108 -22.82,-50.928 -50.928,-50.928c-28.108,0 -50.928,22.82 -50.928,50.928l0,376.907c0,28.108 22.82,50.928 50.928,50.928c28.108,-0 50.928,-22.82 50.928,-50.928l-0,-376.907Z" fill="var(--accent)"/>
+            <path d="M612.223,906.996c-0,-28.108 -22.82,-50.928 -50.928,-50.928c-28.108,0 -50.928,22.82 -50.928,50.928l0,201.817c0,28.108 22.82,50.928 50.928,50.928c28.108,-0 50.928,-22.82 50.928,-50.928l-0,-201.817Z" fill="var(--accent)"/>
+            <path d="M445.696,1046.8c-1.798,-28.05 -26.032,-49.363 -54.082,-47.565c-28.05,1.799 -49.363,26.033 -47.565,54.083l1.464,22.821c1.798,28.05 26.032,49.363 54.082,47.565c28.05,-1.799 49.363,-26.033 47.565,-54.083l-1.464,-22.821Z" fill="var(--accent)"/>
+        </svg>
+    </div>
+
+    <h1 class="site-title">Norr</h1>
+    <p class="tagline">Transport agnostic post-quantum encrypted protocol for decentralized communication</p>
+
+    <nav class="nav">
+        <a href="/">Home</a>
+    </nav>
+</header>
+
+<main>
+    <section class="section">
+        <h2 class="section-title">What is Norr?</h2>
+        <p>Norr is a communication protocol designed for resilient, decentralized messaging. It works across any transport layer - from the internet to radio waves - and uses post-quantum encryption to ensure your messages stay private, even against future threats.</p>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Key Features</h2>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-content">
+                    <div class="feature-title">Transport Agnostic</div>
+                    <p class="feature-description">Works over TCP/IP, LoRa, packet radio, or any other transport. Your communication isn't tied to infrastructure that might fail.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-content">
+                    <div class="feature-title">Post-Quantum Encryption</div>
+                    <p class="feature-description">Uses modern cryptographic algorithms designed to withstand attacks from quantum computers.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-content">
+                    <div class="feature-title">Decentralized</div>
+                    <p class="feature-description">No central servers required. Messages can hop through any available node to reach their destination.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-content">
+                    <div class="feature-title">Low Bandwidth</div>
+                    <p class="feature-description">Optimized for constrained environments. Send messages even over the slowest connections.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Status</h2>
+        <p>Norr is currently in active development. The protocol specification is being refined and reference implementations are being built.</p>
+    </section>
+</main>
+
+<footer class="footer">
+    <p class="footer-text">Ravneberg</p>
+    <p class="footer-location">Sweden</p>
+
+    <div class="theme-toggle">
+        <span class="theme-toggle-label">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </span>
+        <label class="theme-switch">
+            <input type="checkbox" id="theme-toggle-input" aria-label="Toggle dark mode">
+            <span class="theme-switch-track"></span>
+        </label>
+        <span class="theme-toggle-label">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </span>
+    </div>
+</footer>
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

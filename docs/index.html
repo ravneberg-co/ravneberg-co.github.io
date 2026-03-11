@@ -6,7 +6,7 @@
     <meta name="description" content="Miscellaneous tool development">
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <title>Ravneberg</title>
     <style>
 /* CSS Variables with Light/Dark Theme Support */
@@ -587,6 +587,83 @@ html.dark {
     --color-link-hover: #79b8ff;
 }
 
+/* Terrain WebGL Section */
+.terrain-section {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin-bottom: var(--spacing-2xl);
+}
+
+#terrain-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.terrain-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.terrain-toggle-label {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+}
+
+.terrain-switch {
+    position: relative;
+    width: 52px;
+    height: 32px;
+}
+
+.terrain-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.terrain-switch-track {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-border);
+    border-radius: 16px;
+    transition: background-color var(--transition-normal);
+}
+
+.terrain-switch-track::before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--color-bg);
+    border-radius: 50%;
+    transition: transform var(--transition-normal), background-color var(--transition-normal);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.terrain-switch input:checked + .terrain-switch-track {
+    background-color: var(--accent);
+}
+
+.terrain-switch input:checked + .terrain-switch-track::before {
+    transform: translateX(20px);
+}
+
+.terrain-switch input:focus-visible + .terrain-switch-track {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
     .hero {
@@ -648,6 +725,18 @@ html.dark {
     <nav class="nav">
     </nav>
 </header>
+
+<section class="terrain-section">
+    <canvas id="terrain-canvas"></canvas>
+    <div class="terrain-controls">
+        <span class="terrain-toggle-label">Single light</span>
+        <label class="terrain-switch">
+            <input type="checkbox" id="all-lights-toggle" aria-label="Toggle all lights">
+            <span class="terrain-switch-track"></span>
+        </label>
+        <span class="terrain-toggle-label">All lights</span>
+    </div>
+</section>
 
 <main>
     <section class="section">
@@ -716,6 +805,7 @@ html.dark {
 
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         (function() {
             const toggle = document.getElementById('theme-toggle-input');
@@ -750,6 +840,498 @@ html.dark {
                     setTheme(e.matches ? 'dark' : 'light');
                 }
             });
+        })();
+
+        // Terrain Animation with Three.js
+        (function() {
+            const container = document.querySelector('.terrain-section');
+            if (!container || typeof THREE === 'undefined') return;
+
+            const HEIGHT = 200;
+            const worldWidth = 4000;
+            let scroll = 0;
+            let allLights = false;
+
+            // Three.js setup
+            const scene = new THREE.Scene();
+            const camera = new THREE.OrthographicCamera(0, 1, 1, 0, 0.1, 10);
+            camera.position.z = 1;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setClearColor(0x000000, 0);
+            container.innerHTML = '';
+            container.appendChild(renderer.domElement);
+            renderer.domElement.id = 'terrain-canvas';
+
+            // Re-add controls
+            const controls = document.createElement('div');
+            controls.className = 'terrain-controls';
+            controls.innerHTML = `
+                <span class="terrain-toggle-label">Single light</span>
+                <label class="terrain-switch">
+                    <input type="checkbox" id="all-lights-toggle" aria-label="Toggle all lights">
+                    <span class="terrain-switch-track"></span>
+                </label>
+                <span class="terrain-toggle-label">All lights</span>
+            `;
+            container.appendChild(controls);
+
+            const toggle = document.getElementById('all-lights-toggle');
+            if (toggle) {
+                toggle.addEventListener('change', function() {
+                    allLights = this.checked;
+                });
+            }
+
+            // Terrain blocks
+            const terrainBlocks = [];
+
+            function generateTerrain() {
+                terrainBlocks.length = 0;
+                let x = 0;
+                let lastFromTop = Math.random() > 0.5;
+
+                while (x < worldWidth) {
+                    const w = 80 + Math.random() * 150;
+
+                    // Alternating blocks that go PAST middle to force weaving
+                    if (lastFromTop) {
+                        // Block from bottom - goes 55-75% up, forces soldiers to TOP
+                        const h = HEIGHT * (0.55 + Math.random() * 0.2);
+                        terrainBlocks.push({ x, y: HEIGHT - h, w, h });
+                        lastFromTop = false;
+                    } else {
+                        // Block from top - goes 55-75% down, forces soldiers to BOTTOM
+                        const h = HEIGHT * (0.55 + Math.random() * 0.2);
+                        terrainBlocks.push({ x, y: 0, w, h });
+                        lastFromTop = true;
+                    }
+
+                    x += w + 80 + Math.random() * 100;
+                }
+            }
+            generateTerrain();
+
+            // Soldiers
+            const soldiers = [];
+            const formationSpacing = 30;
+            for (let i = 0; i < 8; i++) {
+                soldiers.push({ x: 80 + i * formationSpacing, y: HEIGHT / 2, targetY: HEIGHT / 2 });
+            }
+
+            // Collision detection
+            function isBlocked(x, y, radius) {
+                for (const b of terrainBlocks) {
+                    const bx = b.x - scroll;
+                    if (x + radius > bx && x - radius < bx + b.w &&
+                        y + radius > b.y && y - radius < b.y + b.h) return true;
+                }
+                return false;
+            }
+
+            function findClearY(x, currentY, preferY) {
+                const radius = 10;
+
+                // If currently inside a block, find escape route immediately
+                if (isBlocked(x, currentY, radius)) {
+                    for (let offset = 5; offset < HEIGHT; offset += 5) {
+                        if (currentY - offset > 10 && !isBlocked(x, currentY - offset, radius)) {
+                            return currentY - offset; // Escape upward
+                        }
+                        if (currentY + offset < HEIGHT - 10 && !isBlocked(x, currentY + offset, radius)) {
+                            return currentY + offset; // Escape downward
+                        }
+                    }
+                    return currentY;
+                }
+
+                // Look ahead for obstacles at multiple distances
+                // First: immediate obstacle (10-120px)
+                // Second: next obstacle (120-250px) to start preparing early
+
+                let wallAhead = false;
+                let wallDist = 120;
+                for (let d = 10; d <= 120; d += 10) {
+                    if (isBlocked(x + d, currentY, radius)) {
+                        wallAhead = true;
+                        wallDist = d;
+                        break;
+                    }
+                }
+
+                if (wallAhead) {
+                    // Wall ahead - find clear path and start diagonal movement
+                    const urgency = 0.05 + (120 - wallDist) / 300;
+                    for (let offset = 5; offset < HEIGHT / 2; offset += 5) {
+                        const clearUp = !isBlocked(x + wallDist, currentY - offset, radius) &&
+                                       !isBlocked(x + wallDist/2, currentY - offset, radius);
+                        const clearDown = !isBlocked(x + wallDist, currentY + offset, radius) &&
+                                         !isBlocked(x + wallDist/2, currentY + offset, radius);
+
+                        if (currentY - offset > 15 && clearUp) {
+                            return currentY - offset * urgency;
+                        }
+                        if (currentY + offset < HEIGHT - 15 && clearDown) {
+                            return currentY + offset * urgency;
+                        }
+                    }
+                }
+
+                // No immediate obstacle - look for NEXT obstacle further ahead
+                let nextWallDist = 0;
+                let nextWallY = 0; // Which side is the next wall?
+                for (let d = 130; d <= 280; d += 15) {
+                    // Check if there's a wall at top or bottom
+                    const blockedTop = isBlocked(x + d, 30, radius);
+                    const blockedBottom = isBlocked(x + d, HEIGHT - 30, radius);
+                    const blockedMiddle = isBlocked(x + d, HEIGHT / 2, radius);
+
+                    if (blockedMiddle || blockedTop || blockedBottom) {
+                        nextWallDist = d;
+                        // Determine which way we need to go
+                        if (blockedBottom && !blockedTop) {
+                            nextWallY = 30; // Need to go up
+                        } else if (blockedTop && !blockedBottom) {
+                            nextWallY = HEIGHT - 30; // Need to go down
+                        } else if (blockedMiddle) {
+                            // Check which side is clear
+                            nextWallY = !isBlocked(x + d, 30, radius) ? 30 : HEIGHT - 30;
+                        }
+                        break;
+                    }
+                }
+
+                if (nextWallDist > 0 && nextWallY > 0) {
+                    // Start slowly drifting towards where we need to be for next obstacle
+                    const drift = (nextWallY - currentY) * 0.008;
+                    return currentY + drift;
+                }
+
+                // No obstacles - gently drift towards center
+                return currentY + (preferY - currentY) * 0.02;
+            }
+
+            // Custom shader material for raytraced shadows
+            const shadowMaterial = new THREE.ShaderMaterial({
+                transparent: true,
+                uniforms: {
+                    u_resolution: { value: new THREE.Vector2(1, 1) },
+                    u_blocks: { value: new Float32Array(128) },
+                    u_numBlocks: { value: 0 },
+                    u_lights: { value: new Float32Array(16) },
+                    u_numLights: { value: 1 }
+                },
+                vertexShader: `
+                    varying vec2 v_uv;
+                    void main() {
+                        v_uv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    precision highp float;
+                    varying vec2 v_uv;
+                    uniform vec2 u_resolution;
+                    uniform float u_blocks[128];
+                    uniform int u_numBlocks;
+                    uniform float u_lights[16];
+                    uniform int u_numLights;
+
+                    bool inBlock(vec2 p) {
+                        for (int i = 0; i < 32; i++) {
+                            if (i >= u_numBlocks) break;
+                            float bx = u_blocks[i * 4];
+                            float by = u_blocks[i * 4 + 1];
+                            float bw = u_blocks[i * 4 + 2];
+                            float bh = u_blocks[i * 4 + 3];
+                            if (p.x >= bx && p.x <= bx + bw && p.y >= by && p.y <= by + bh) return true;
+                        }
+                        return false;
+                    }
+
+                    bool rayHitsBox(vec2 ro, vec2 rd, float bx, float by, float bw, float bh, float maxT) {
+                        vec2 invRd = 1.0 / rd;
+                        vec2 t1 = (vec2(bx, by) - ro) * invRd;
+                        vec2 t2 = (vec2(bx + bw, by + bh) - ro) * invRd;
+                        vec2 tmin = min(t1, t2);
+                        vec2 tmax = max(t1, t2);
+                        float tNear = max(tmin.x, tmin.y);
+                        float tFar = min(tmax.x, tmax.y);
+                        return tNear < tFar && tNear > 0.5 && tNear < maxT;
+                    }
+
+                    bool isLit(vec2 p) {
+                        for (int j = 0; j < 8; j++) {
+                            if (j >= u_numLights) break;
+                            vec2 light = vec2(u_lights[j * 2], u_lights[j * 2 + 1]);
+                            vec2 dir = p - light;
+                            float dist = length(dir);
+                            if (dist < 1.0) return true;
+                            vec2 rd = dir / dist;
+
+                            bool blocked = false;
+                            for (int i = 0; i < 32; i++) {
+                                if (i >= u_numBlocks) break;
+                                float bx = u_blocks[i * 4];
+                                float by = u_blocks[i * 4 + 1];
+                                float bw = u_blocks[i * 4 + 2];
+                                float bh = u_blocks[i * 4 + 3];
+                                if (rayHitsBox(light, rd, bx, by, bw, bh, dist)) {
+                                    blocked = true;
+                                    break;
+                                }
+                            }
+                            if (!blocked) return true;
+                        }
+                        return false;
+                    }
+
+                    void main() {
+                        vec2 p = v_uv * u_resolution;
+                        if (inBlock(p)) {
+                            gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                        } else if (isLit(p)) {
+                            gl_FragColor = vec4(0.18, 0.16, 0.12, 1.0);
+                        } else {
+                            gl_FragColor = vec4(0.04, 0.04, 0.05, 1.0);
+                        }
+                    }
+                `
+            });
+
+            const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMaterial);
+            plane.position.set(0.5, 0.5, 0);
+            scene.add(plane);
+
+            // Soldier meshes
+            const soldierGroup = new THREE.Group();
+            scene.add(soldierGroup);
+            const soldierMeshes = [];
+            const radioWaves = []; // Radio wave rings for each soldier
+
+            const TEAL = 0x59e6d5;
+            const UNLIT = 0x556677;
+
+            for (let i = 0; i < soldiers.length; i++) {
+                const geo = new THREE.CircleGeometry(6, 32);
+                const mat = new THREE.MeshBasicMaterial({ color: UNLIT });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.position.z = 0.1;
+                soldierGroup.add(mesh);
+                soldierMeshes.push(mesh);
+
+                // Create radio wave rings (3 per soldier)
+                const waves = [];
+                for (let w = 0; w < 3; w++) {
+                    const ringGeo = new THREE.RingGeometry(8, 10, 32);
+                    const ringMat = new THREE.MeshBasicMaterial({
+                        color: TEAL,
+                        transparent: true,
+                        opacity: 0
+                    });
+                    const ring = new THREE.Mesh(ringGeo, ringMat);
+                    ring.position.z = 0.05;
+                    ring.userData.phase = w * (Math.PI * 2 / 3); // Offset phases
+                    ring.userData.baseScale = 1;
+                    soldierGroup.add(ring);
+                    waves.push(ring);
+                }
+                radioWaves.push(waves);
+            }
+
+            let width = 1, height = 1;
+
+            function resize() {
+                const rect = container.getBoundingClientRect();
+                width = rect.width;
+                height = rect.height;
+                renderer.setSize(width, height);
+                renderer.setPixelRatio(window.devicePixelRatio);
+                camera.right = width;
+                camera.top = height;
+                camera.updateProjectionMatrix();
+                plane.scale.set(width, height, 1);
+                plane.position.set(width / 2, height / 2, 0);
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const clock = new THREE.Clock();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                const dt = Math.min(clock.getDelta(), 0.1);
+
+                // Scroll
+                scroll += 25 * dt;
+                if (scroll > worldWidth / 2) {
+                    scroll = 0;
+                    generateTerrain();
+                }
+
+                // Update soldiers
+                const scale = height / HEIGHT;
+                for (let i = 0; i < soldiers.length; i++) {
+                    const s = soldiers[i];
+                    // Alternating spacing: normal, then triple
+                    let targetX = 80;
+                    for (let j = 0; j < i; j++) {
+                        targetX += (j % 2 === 0) ? formationSpacing : formationSpacing * 3;
+                    }
+
+                    // Each soldier reacts independently - prefer current Y, drift to center slowly
+                    const preferY = s.y + (HEIGHT / 2 - s.y) * 0.01;
+
+                    // Find target Y (handles escape from blocks and obstacle avoidance)
+                    s.targetY = findClearY(s.x, s.y, preferY);
+
+                    // If inside a block, move directly to escape position
+                    if (isBlocked(s.x, s.y, 8)) {
+                        s.y = s.targetY;
+                    } else {
+                        // Normal smooth movement - faster Y when avoiding walls
+                        const ySpeed = Math.abs(s.targetY - s.y) > 5 ? 0.15 : 0.1;
+                        const newY = s.y + (s.targetY - s.y) * ySpeed;
+                        const newX = s.x + (targetX - s.x) * 0.1;
+
+                        // Only move if not blocked at new position
+                        if (!isBlocked(newX, newY, 8)) {
+                            s.x = newX;
+                            s.y = newY;
+                        } else if (!isBlocked(s.x, newY, 8)) {
+                            s.y = newY;
+                        } else if (!isBlocked(newX, s.y, 8)) {
+                            s.x = newX;
+                        }
+                    }
+                }
+
+                // Get visible blocks
+                const blockData = shadowMaterial.uniforms.u_blocks.value;
+                let numBlocks = 0;
+                for (const b of terrainBlocks) {
+                    const sx = (b.x - scroll) * scale;
+                    if (sx > width + 100 || sx + b.w * scale < -100) continue;
+                    if (numBlocks >= 32) break;
+                    blockData[numBlocks * 4] = sx;
+                    blockData[numBlocks * 4 + 1] = (HEIGHT - b.y - b.h) * scale;
+                    blockData[numBlocks * 4 + 2] = b.w * scale;
+                    blockData[numBlocks * 4 + 3] = b.h * scale;
+                    numBlocks++;
+                }
+
+                // Light positions
+                const lightData = shadowMaterial.uniforms.u_lights.value;
+                const sorted = [...soldiers].sort((a, b) => a.x - b.x);
+                const numLights = allLights ? soldiers.length : 1;
+
+                if (allLights) {
+                    for (let i = 0; i < soldiers.length; i++) {
+                        lightData[i * 2] = soldiers[i].x * scale;
+                        lightData[i * 2 + 1] = (HEIGHT - soldiers[i].y) * scale;
+                    }
+                } else {
+                    lightData[0] = sorted[0].x * scale;
+                    lightData[1] = (HEIGHT - sorted[0].y) * scale;
+                }
+
+                shadowMaterial.uniforms.u_resolution.value.set(width, height);
+                shadowMaterial.uniforms.u_numBlocks.value = numBlocks;
+                shadowMaterial.uniforms.u_numLights.value = numLights;
+
+                // Check if point is lit (CPU version of shader logic)
+                function isPointLit(px, py) {
+                    const lightSources = allLights ? soldiers : [sorted[0]];
+                    for (const light of lightSources) {
+                        const lx = light.x * scale;
+                        const ly = (HEIGHT - light.y) * scale;
+                        const dx = px - lx;
+                        const dy = py - ly;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 1) return true;
+
+                        let blocked = false;
+                        for (let i = 0; i < numBlocks; i++) {
+                            const bx = blockData[i * 4];
+                            const by = blockData[i * 4 + 1];
+                            const bw = blockData[i * 4 + 2];
+                            const bh = blockData[i * 4 + 3];
+
+                            // Ray-box intersection
+                            const rdx = dx / dist;
+                            const rdy = dy / dist;
+                            const invRdx = 1 / rdx;
+                            const invRdy = 1 / rdy;
+                            const t1x = (bx - lx) * invRdx;
+                            const t2x = (bx + bw - lx) * invRdx;
+                            const t1y = (by - ly) * invRdy;
+                            const t2y = (by + bh - ly) * invRdy;
+                            const tminx = Math.min(t1x, t2x);
+                            const tmaxx = Math.max(t1x, t2x);
+                            const tminy = Math.min(t1y, t2y);
+                            const tmaxy = Math.max(t1y, t2y);
+                            const tNear = Math.max(tminx, tminy);
+                            const tFar = Math.min(tmaxx, tmaxy);
+                            if (tNear < tFar && tNear > 0.5 && tNear < dist) {
+                                blocked = true;
+                                break;
+                            }
+                        }
+                        if (!blocked) return true;
+                    }
+                    return false;
+                }
+
+                // Animation time for radio waves
+                const time = performance.now() * 0.001;
+
+                // Update soldier meshes
+                for (let i = 0; i < soldiers.length; i++) {
+                    const s = soldiers[i];
+                    const mesh = soldierMeshes[i];
+                    const sx = s.x * scale;
+                    const sy = (HEIGHT - s.y) * scale;
+                    mesh.position.x = sx;
+                    mesh.position.y = sy;
+
+                    const hasLight = allLights || (s === sorted[0]);
+                    const inLight = isPointLit(sx, sy);
+
+                    if (hasLight) {
+                        mesh.material.color.setHex(TEAL);
+                        mesh.visible = true;
+
+                        // Animate radio waves
+                        const waves = radioWaves[i];
+                        for (let w = 0; w < waves.length; w++) {
+                            const ring = waves[w];
+                            ring.position.x = sx;
+                            ring.position.y = sy;
+                            ring.visible = true;
+
+                            // Pulsing animation
+                            const phase = ring.userData.phase;
+                            const cycle = (time * 0.8 + phase) % (Math.PI * 2);
+                            const progress = cycle / (Math.PI * 2);
+                            const ringScale = 1 + progress * 3;
+                            ring.scale.set(ringScale, ringScale, 1);
+                            ring.material.opacity = (1 - progress) * 0.5;
+                        }
+                    } else if (inLight) {
+                        mesh.material.color.setHex(UNLIT);
+                        mesh.visible = true;
+                        // Hide radio waves for unlit soldiers
+                        radioWaves[i].forEach(ring => ring.visible = false);
+                    } else {
+                        mesh.visible = false;
+                        radioWaves[i].forEach(ring => ring.visible = false);
+                    }
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            animate();
         })();
     </script>
 </body>
