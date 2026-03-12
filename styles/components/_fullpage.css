@@ -56,7 +56,8 @@ body {
 .page--hero .logo-container,
 .page--hero h1,
 .page--hero > p,
-.page--hero .version-badge {
+.page--hero .version-badge,
+.page--hero .social-links {
 	position: relative;
 	z-index: 1;
 }

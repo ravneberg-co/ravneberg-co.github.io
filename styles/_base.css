@@ -63,6 +63,36 @@ a:hover {
 }
 
 /* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.text-button {
+	display: inline-block;
+	float: right;
+	padding: var(--space-sm) var(--space-xl);
+	font-family: var(--font-body);
+	font-size: 0.875rem;
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--bg-color);
+	background: var(--color-primary);
+	border: 0;
+	border-radius: 9999px;
+	text-decoration: none;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+
+.text-button:hover {
+	opacity: 0.8;
+}
+
+.text-button:active {
+	transform: scale(0.98);
+}
+
+/* ==========================================================================
    Utilities
    ========================================================================== */
 

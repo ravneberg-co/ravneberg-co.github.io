@@ -17,27 +17,33 @@
 
 .terrain-controls {
 	position: absolute;
-	bottom: var(--space-md);
-	left: 50%;
-	transform: translateX(-50%);
+	top: var(--space-md);
+	right: var(--space-md);
 	display: flex;
 	align-items: center;
-	gap: var(--space-sm);
-	z-index: 1;
+	gap: var(--space-xs);
+	z-index: 2;
 	pointer-events: auto;
+	opacity: 0.5;
+	transition: opacity var(--transition-fast);
+}
+
+.terrain-controls:hover {
+	opacity: 1;
 }
 
 .terrain-toggle-label {
-	font-size: 0.65rem;
+	font-family: var(--font-body);
+	font-size: 0.6rem;
 	text-transform: uppercase;
-	letter-spacing: 0.1em;
+	letter-spacing: 0.12em;
 	color: var(--text-color-muted);
 }
 
 .terrain-switch {
 	position: relative;
-	width: 36px;
-	height: 20px;
+	width: 32px;
+	height: 16px;
 }
 
 .terrain-switch input {
@@ -50,27 +56,27 @@
 	position: absolute;
 	cursor: pointer;
 	inset: 0;
-	background: var(--border-color);
-	border-radius: 10px;
-	transition: background var(--transition-base);
+	border: 1px solid var(--text-color-muted);
+	background: transparent;
+	transition: background var(--transition-base), border-color var(--transition-base);
 }
 
 .terrain-switch-track::before {
 	content: "";
 	position: absolute;
-	height: 14px;
-	width: 14px;
+	height: 10px;
+	width: 10px;
 	left: 3px;
 	bottom: 3px;
-	background: var(--bg-color);
-	border-radius: 50%;
+	background: var(--text-color-muted);
 	transition: transform var(--transition-base);
 }
 
 .terrain-switch input:checked + .terrain-switch-track {
-	background: var(--primary-color);
+	border-color: var(--primary-color);
 }
 
 .terrain-switch input:checked + .terrain-switch-track::before {
 	transform: translateX(16px);
+	background: var(--primary-color);
 }
