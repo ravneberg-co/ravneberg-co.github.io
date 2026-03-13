@@ -4,16 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.js",
+    "build": "node build.js",
     "dev": "NODE_ENV=development node server.js"
   },
   "dependencies": {
-    "better-sqlite3": "^12.6.2",
-    "ejs": "^3.1.10",
-    "express": "^5.1.0",
-    "geoip-lite": "^2.0.0"
+    "ejs": "^3.1.10"
   },
   "devDependencies": {
+    "better-sqlite3": "^12.6.2",
+    "express": "^5.1.0",
+    "geoip-lite": "^2.0.0",
     "livereload": "^0.10.3"
   }
 }

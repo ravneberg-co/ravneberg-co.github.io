@@ -3,7 +3,6 @@ import { init as initTheme } from './components/theme-toggle.js'
 import { init as initNav } from './components/navigation.js'
 import { init as initFullscreen } from './components/fullscreen.js'
 import { init as initHeadingScramble } from './components/heading-scramble.js'
-import { init as initAnalytics } from './core/analytics.js'
 import { init as initRouter } from './core/router.js'
 
 document.addEventListener('route-change', (e) => {
@@ -24,5 +23,4 @@ initTheme()
 initNav()
 initFullscreen()
 initHeadingScramble()
-initAnalytics()
 initRouter()
